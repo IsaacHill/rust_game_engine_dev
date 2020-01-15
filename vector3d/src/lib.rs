@@ -1,5 +1,6 @@
-use std::ops::{Index,IndexMut};
+use std::ops::{Index,IndexMut, MulAssign, DivAssign, Mul, Div, Neg};
 
+#[derive(Debug, PartialEq)]
 struct Vector3D {
     x: f32,
     y: f32,
@@ -31,11 +32,45 @@ impl IndexMut<u32> for Vector3D {
     }
 
 }
-// impl Vector3D {
-//     fn *(&self, f32: index) -> f32 {
-//         self.width * self.height
-//     }
-// }
+
+impl MulAssign<f32> for Vector3D {
+    fn mul_assign(&mut self, scalar: f32) {
+        self.x *= scalar;
+        self.y *= scalar;
+        self.z *= scalar; 
+    }
+}
+
+impl DivAssign<f32> for Vector3D {
+    fn div_assign(&mut self, scalar: f32) {
+        self.x /= scalar;
+        self.y /= scalar;
+        self.z /= scalar; 
+    }
+}
+
+impl Mul<f32> for Vector3D {
+    type Output = Self;
+    fn mul(self, rhs_scalar: f32) -> Self {
+        Vector3D { x: self.x * rhs_scalar, y: self.y * rhs_scalar, z: self.z * rhs_scalar}
+    }
+}
+
+impl Div<f32> for Vector3D {
+    type Output = Self;
+    fn div(self, rhs_scalar: f32) -> Self {
+        Vector3D { x: self.x / rhs_scalar, y: self.y / rhs_scalar, z: self.z / rhs_scalar}
+    }
+}
+
+impl Neg for Vector3D {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Vector3D { x: -self.x, y: -self.y, z: -self.z}
+    }
+}
+
+
 
 #[cfg(test)]
     #[test]
@@ -63,5 +98,41 @@ impl IndexMut<u32> for Vector3D {
         assert_eq!(vec3[0],-2.0 );
         assert_eq!(vec3[1],-3.0 );
         assert_eq!(vec3[2],-55.0 );
+    }
+
+    #[test]
+    fn scalar_multiplication_assign() {
+        let mut vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
+        vec3*=2.0;
+        assert_eq!(vec3.x, 4.0 );
+        assert_eq!(vec3.y, 4.0 );
+        assert_eq!(vec3.z, 6.0 ); 
+    }
+
+    #[test]
+    fn scalar_division_assign() {
+        let mut vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
+        vec3/=2.0;
+        assert_eq!(vec3.x, 1.0 );
+        assert_eq!(vec3.y, 1.0 );
+        assert_eq!(vec3.z, 1.5 ); 
+    }
+
+    #[test]
+    fn inline_scalar_multiplication() {
+        let vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
+        assert_eq!(vec3 * 2.0, Vector3D{x:4.0, y:4.0, z:6.0})
+    }
+
+    #[test]
+    fn inline_scalar_division() {
+        let vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
+        assert_eq!(vec3 / 2.0, Vector3D{x:1.0, y:1.0, z:1.5})
+    }
+
+    #[test]
+    fn negation() {
+        let vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
+        assert_eq!(-vec3, Vector3D{x:-2.0, y:-2.0, z:-3.0})
     }
 
