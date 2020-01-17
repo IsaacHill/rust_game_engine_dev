@@ -1,12 +1,31 @@
 use std::ops::{Index,IndexMut, MulAssign, DivAssign, Mul, Div, Neg};
-
-#[derive(Debug, PartialEq)]
+use fast_inv_sqrt::InvSqrt32;
+use std::f32;
+#[derive(Debug, PartialEq, Copy, Clone)]
 struct Vector3D {
     x: f32,
     y: f32,
     z: f32,
 }
 
+impl Vector3D {
+    fn new(x: f32, y: f32, z: f32) -> Vector3D{
+        Vector3D {x: x, y: y, z: z}
+    }
+
+    fn magnitude(&self) -> f32 {
+        (&self.x * &self.x + &self.y * &self.y + &self.z * &self.z).sqrt()
+    }
+
+    fn normalize(&self) -> Vector3D {
+        *self / self.magnitude()
+    }
+
+    fn normalize_approx(&self) -> Vector3D {
+        let mag_squared = (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).inv_sqrt32();
+        *self * mag_squared
+    }
+}
 impl Index<u32> for Vector3D {
     type Output = f32;
 
@@ -134,5 +153,29 @@ impl Neg for Vector3D {
     fn negation() {
         let vec3 = Vector3D {x:2.0,y:2.0,z:3.0};
         assert_eq!(-vec3, Vector3D{x:-2.0, y:-2.0, z:-3.0})
+    }
+
+    #[test]
+    fn new_vector() {
+        let vec3 = Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3, Vector3D{x:2.0, y:3.0, z:4.0})
+    }
+
+    #[test]
+    fn magnitude_test() {
+        let vec3 = Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3.magnitude(), 5.38516480713)
+    }
+
+    #[test]
+    fn normalize_test() {
+        let vec3 = Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3.normalize(),Vector3D::new(0.37139067635,0.55708605,0.7427813527) )
+    }
+
+    #[test]
+    fn normalize_approx_test() {
+        let vec3 = Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3.normalize_approx(),Vector3D::new(0.37097,0.556455,0.74194))
     }
 
