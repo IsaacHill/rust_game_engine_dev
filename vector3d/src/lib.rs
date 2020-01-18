@@ -17,11 +17,11 @@ impl Vector3D {
         (&self.x * &self.x + &self.y * &self.y + &self.z * &self.z).sqrt()
     }
 
-    fn normalize(&self) -> Vector3D {
+    fn normalize_precise(&self) -> Vector3D {
         *self / self.magnitude()
     }
 
-    fn normalize_approx(&self) -> Vector3D {
+    fn normalize(&self) -> Vector3D {
         let mag_squared = (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).inv_sqrt32();
         *self * mag_squared
     }
@@ -168,14 +168,14 @@ impl Neg for Vector3D {
     }
 
     #[test]
-    fn normalize_test() {
+    fn normalize_precise_test() {
         let vec3 = Vector3D::new(2.0,3.0,4.0);
-        assert_eq!(vec3.normalize(),Vector3D::new(0.37139067635,0.55708605,0.7427813527) )
+        assert_eq!(vec3.normalize_precise(),Vector3D::new(0.37139067635,0.55708605,0.7427813527) )
     }
 
     #[test]
-    fn normalize_approx_test() {
+    fn normalize_test() {
         let vec3 = Vector3D::new(2.0,3.0,4.0);
-        assert_eq!(vec3.normalize_approx(),Vector3D::new(0.37097,0.556455,0.74194))
+        assert_eq!(vec3.normalize(),Vector3D::new(0.37097,0.556455,0.74194))
     }
 
