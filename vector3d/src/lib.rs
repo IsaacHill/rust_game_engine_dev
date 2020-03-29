@@ -1,11 +1,11 @@
-use std::ops::{Index,IndexMut, MulAssign, DivAssign, Mul, Div, Neg};
+use std::ops::{Index,IndexMut, MulAssign, DivAssign, Mul, Div, Neg, AddAssign, SubAssign, Add, Sub};
 use fast_inv_sqrt::InvSqrt32;
 use std::f32;
 #[derive(Debug, PartialEq, Copy, Clone)]
 struct Vector3D {
-    x: f32,
-    y: f32,
-    z: f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 impl Vector3D {
@@ -89,6 +89,51 @@ impl Neg for Vector3D {
     }
 }
 
+
+// Self is the type e.g Vector3d
+impl AddAssign for Vector3D {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        };
+    }
+}
+
+impl SubAssign for Vector3D {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        };
+    }
+}
+
+impl Add for Vector3D {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl Sub for Vector3D {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
 
 
 #[cfg(test)]
@@ -176,6 +221,36 @@ impl Neg for Vector3D {
     #[test]
     fn normalize_test() {
         let vec3 = Vector3D::new(2.0,3.0,4.0);
-        assert_eq!(vec3.normalize(),Vector3D::new(0.37097,0.556455,0.74194))
+        assert_eq!(vec3.normalize(),Vector3D::new(0.37097,0.556455,0.74194));
+        assert_eq!(vec3, Vector3D::new(2.0,3.0,4.0));
     }
+
+    #[test]
+    fn add_assign_test() {
+        let mut vec3 = Vector3D::new(2.0,3.0,4.0);
+        vec3 += Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3,Vector3D {x:4.0, y: 6.0, z:8.0});
+      
+    }
+
+    #[test]
+    fn sub_assign_test() {
+        let mut vec3 = Vector3D {x:4.0, y: 6.0, z:8.0};
+        vec3 -= Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3,Vector3D::new(2.0,3.0,4.0));  
+    }
+
+    fn add_test() {
+        let vec3 = Vector3D::new(2.0,3.0,4.0);
+        assert_eq!(vec3 + Vector3D::new(2.0,3.0,4.0),Vector3D {x:4.0, y: 6.0, z:8.0});
+      
+    }
+
+    #[test]
+    fn sub_test() {
+        let vec3 = Vector3D {x:4.0, y: 6.0, z:8.0};
+        assert_eq!(vec3 - Vector3D::new(2.0,3.0,4.0),Vector3D::new(2.0,3.0,4.0));  
+    }
+
+
 
